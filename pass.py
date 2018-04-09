@@ -10,7 +10,8 @@ def get_credentials():
 def authenticate(username, password, pwdb):
     status = False
     if username in pwdb:
-        if pwdb[username] == password:
+        salt = pwdb[username][1]
+        if pwdb[username][0] == pwhash(password, salt):
             status = True
     else:
         ans = input('User not known. Add it to db? [y/n]')
@@ -21,7 +22,9 @@ def authenticate(username, password, pwdb):
 
 def add_user(username, password, pwdb):
     if username not in pwdb:
-        pwdb[username] = password
+        salt = get_salt()
+        hash = pwhash(password,salt)
+        pwdb[username] = [hash, salt]
         write_pwdb(pwdb)
     else:
         print('User already known!')
